@@ -1,5 +1,7 @@
 require('dotenv').config();
 const { App } = require('@slack/bolt');
+const { registerKudosCommand } = require('./commands/kudos');
+const { registerSubmitKudos } = require('./actions/submitKudos');
 
 const app = new App({
   token: process.env.SLACK_BOT_TOKEN,
@@ -8,11 +10,11 @@ const app = new App({
   appToken: process.env.SLACK_APP_TOKEN,
 });
 
-// Slash command placeholder
-app.command('/kudos', async ({ ack, body, client }) => {
-  await ack();
-  // TODO: Open modal
-});
+// Register commands
+registerKudosCommand(app);
+
+// Register actions
+registerSubmitKudos(app);
 
 (async () => {
   const port = process.env.PORT || 3000;
