@@ -1,6 +1,7 @@
 require('dotenv').config();
 const { App } = require('@slack/bolt');
 const { registerKudosCommand } = require('./commands/kudos');
+const { registerKudosStatsCommand } = require('./commands/kudosStats');
 const { registerSubmitKudos } = require('./actions/submitKudos');
 
 const app = new App({
@@ -12,6 +13,7 @@ const app = new App({
 
 // Register commands
 registerKudosCommand(app);
+registerKudosStatsCommand(app);
 
 // Register actions
 registerSubmitKudos(app);
