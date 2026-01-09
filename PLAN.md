@@ -123,22 +123,22 @@ kudos/
 
 ### Semana 1: Foundation (Dias 1-7)
 
-- [ ] Dia 1-2: Setup proyecto Node.js + Bolt + PostgreSQL local
-- [ ] Dia 2-3: Crear Slack App en api.slack.com, configurar OAuth y permisos
-- [ ] Dia 3-4: Implementar `/kudos` command + modal basico
-- [ ] Dia 5-6: Implementar submission del modal + guardar en DB
-- [ ] Dia 7: Publicar kudos en canal + DM de notificacion
+- [x] Dia 1-2: Setup proyecto Node.js + Bolt + PostgreSQL local
+- [x] Dia 2-3: Crear Slack App en api.slack.com, configurar OAuth y permisos
+- [x] Dia 3-4: Implementar `/kudos` command + modal basico
+- [x] Dia 5-6: Implementar submission del modal + guardar en DB
+- [x] Dia 7: Publicar kudos en canal + DM de notificacion
 
 ### Semana 2: Features (Dias 8-14)
 
-- [ ] Dia 8-9: Kudos anonimos (logica de no guardar sender)
-- [ ] Dia 10-11: Sistema de categorias configurables + CRUD basico
-- [ ] Dia 12-13: Leaderboard configurable + comando `/kudos-stats`
-- [ ] Dia 14: Scheduler para leaderboard automatico (node-cron)
+- [x] Dia 8-9: Kudos anonimos (logica de no guardar sender)
+- [x] Dia 10-11: Sistema de categorias configurables + CRUD basico
+- [x] Dia 12-13: Leaderboard configurable + comando `/kudos-stats`
+- [x] Dia 14: Scheduler para leaderboard automatico (node-cron)
 
 ### Semana 3: Polish + Demo (Dias 15-21)
 
-- [ ] Dia 15-16: Integracion Google Sheets API
+- [x] Dia 15-16: Integracion Google Sheets API
 - [ ] Dia 17-18: Deploy a Railway + testing en Slack de Koombea
 - [ ] Dia 19-20: Pulir UX, mensajes bonitos, manejo de errores
 - [ ] Dia 21: Grabar demo + preparar presentacion
@@ -176,14 +176,14 @@ app_home_opened     # (opcional) para App Home tab
 1. **Unit tests:** Servicios de kudos y leaderboard
 2. **Integration test:** Flujo completo en canal privado de Koombea
 3. **Demo checklist:**
-   - [ ] Dar kudos a 1 persona
-   - [ ] Dar kudos a multiples personas
-   - [ ] Dar kudos anonimo
-   - [ ] Ver kudos publicado en canal
-   - [ ] Recibir DM de notificacion
-   - [ ] Ver leaderboard con `/kudos-stats`
-   - [ ] Exportar a Google Sheets
-   - [ ] Mostrar categorias configurables
+   - [x] Dar kudos a 1 persona
+   - [x] Dar kudos a multiples personas
+   - [x] Dar kudos anonimo
+   - [x] Ver kudos publicado en canal
+   - [x] Recibir DM de notificacion
+   - [x] Ver leaderboard con `/kudos-stats`
+   - [x] Exportar a Google Sheets
+   - [x] Mostrar categorias configurables
 
 ---
 
@@ -214,3 +214,27 @@ app_home_opened     # (opcional) para App Home tab
 ## Reglas de Trabajo
 
 - Confirmar cada paso antes de ejecutarlo
+
+---
+
+## Progreso Actual
+
+**Ultimo update:** 9 enero 2026
+
+### Completado:
+- Setup inicial del proyecto (Node.js + Bolt + PostgreSQL)
+- Slack App configurada con todos los permisos
+- `/kudos` command con modal interactivo
+- Submit del modal + guardar en DB
+- Publicacion en canal + DM a receptores
+- Kudos anonimos (100% anonimos)
+- Categorias desde la base de datos
+- `/kudos-stats` con leaderboard (week/month/all)
+- Scheduler mensual para leaderboard automatico
+- `/kudos-export` a Google Sheets
+
+### Pendiente:
+- Deploy a Railway
+- Testing en Slack de Koombea (canal privado)
+- Pulir UX y manejo de errores
+- Grabar demo para el concurso
