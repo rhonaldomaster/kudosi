@@ -1,3 +1,5 @@
+const { createKudos, addKudosRecipients, markRecipientsNotified } = require('../db/queries');
+
 const registerSubmitKudos = (app) => {
   app.view('kudos_modal_submit', async ({ ack, body, view, client }) => {
     await ack();
@@ -12,6 +14,7 @@ const registerSubmitKudos = (app) => {
       const category = values.category_block.category.selected_option;
       const channelId = values.channel_block.channel.selected_conversation;
       const isAnonymous = values.anonymous_block.anonymous.selected_options?.length > 0;
+      const categoryId = parseInt(category.value) || null;
 
       // Format recipients as mentions
       const recipientMentions = recipients.map(id => `<@${id}>`).join(', ');
@@ -90,7 +93,19 @@ const registerSubmitKudos = (app) => {
         }
       }
 
-      // TODO: Save to database
+      // Save to database
+      const kudos = await createKudos({
+        senderId,
+        isAnonymous,
+        message,
+        categoryId,
+        channelId,
+      });
+
+      await addKudosRecipients(kudos.id, recipients);
+      await markRecipientsNotified(kudos.id);
+
+      console.log(`Kudos ${kudos.id} saved to database`);
 
     } catch (error) {
       console.error('Error submitting kudos:', error);
