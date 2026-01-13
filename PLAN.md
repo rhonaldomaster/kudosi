@@ -219,7 +219,7 @@ app_home_opened     # (opcional) para App Home tab
 
 ## Progreso Actual
 
-**Ultimo update:** 9 enero 2026
+**Ultimo update:** 13 enero 2026
 
 ### Completado:
 - Setup inicial del proyecto (Node.js + Bolt + PostgreSQL)
@@ -232,6 +232,7 @@ app_home_opened     # (opcional) para App Home tab
 - `/kudos-stats` con leaderboard (week/month/all)
 - Scheduler mensual para leaderboard automatico
 - `/kudos-export` a Google Sheets
+- Documentacion del proyecto (`docs/HOW_IT_WORKS.md`, `docs/DEPLOYMENT.md`)
 
 ### Pendiente:
 - Deploy a Railway
