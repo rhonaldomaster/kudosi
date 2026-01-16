@@ -219,7 +219,7 @@ app_home_opened     # (opcional) para App Home tab
 
 ## Progreso Actual
 
-**Ultimo update:** 13 enero 2026
+**Ultimo update:** 16 enero 2026
 
 ### Completado:
 - Setup inicial del proyecto (Node.js + Bolt + PostgreSQL)
@@ -233,8 +233,10 @@ app_home_opened     # (opcional) para App Home tab
 - Scheduler mensual para leaderboard automatico
 - `/kudos-export` a Google Sheets
 - Documentacion del proyecto (`docs/HOW_IT_WORKS.md`, `docs/DEPLOYMENT.md`)
+- i18n implementado (ingles y espanol)
 
 ### Pendiente:
+- Agregar scope `users.profile:read` en Slack App (para detectar idioma)
 - Deploy a Railway
 - Testing en Slack de Koombea (canal privado)
 - Pulir UX y manejo de errores
@@ -273,29 +275,32 @@ src/
 
 ### Plan de Implementación
 
-#### Fase 1: Setup (~1 día)
+#### Fase 1: Setup (~1 día) - COMPLETADO
 
-- [ ] Agregar scope `users.profile:read` en Slack App
-- [ ] Reinstalar app en workspace
-- [ ] Instalar `i18next`
-- [ ] Crear `src/services/i18n.js` con configuración base
-- [ ] Crear `src/locales/en.json` con todos los strings actuales
-- [ ] Crear `src/locales/es.json` con traducciones
+- [x] Instalar `i18next`
+- [x] Crear `src/services/i18n.js` con configuración base
+- [x] Crear `src/locales/en.json` con todos los strings actuales
+- [x] Crear `src/locales/es.json` con traducciones
 
-#### Fase 2: Integración (~1-2 días)
+#### Fase 2: Integración (~1-2 días) - COMPLETADO
 
-- [ ] Crear helper `getLocale(userId, client)` para obtener idioma del usuario
-- [ ] Modificar `src/views/kudosModal.js` para recibir locale y traducir labels
-- [ ] Modificar `src/actions/submitKudos.js` para traducir mensajes
-- [ ] Modificar `src/commands/kudosStats.js` para traducir leaderboard
-- [ ] Modificar `src/commands/kudosExport.js` para traducir mensajes
-- [ ] Modificar `src/scheduler/leaderboardJob.js` (usar locale default del workspace)
+- [x] Crear helper `getLocale(userId, client)` para obtener idioma del usuario
+- [x] Modificar `src/views/kudosModal.js` para recibir locale y traducir labels
+- [x] Modificar `src/actions/submitKudos.js` para traducir mensajes
+- [x] Modificar `src/commands/kudosStats.js` para traducir leaderboard
+- [x] Modificar `src/commands/kudosExport.js` para traducir mensajes
+- [ ] Modificar `src/scheduler/leaderboardJob.js` (usar locale default del workspace) - opcional
 
-#### Fase 3: Testing
+#### Fase 3: Testing - COMPLETADO
 
-- [ ] Probar con usuario en inglés
-- [ ] Probar con usuario en español
-- [ ] Verificar fallback a inglés si idioma no soportado
+- [x] Probar con usuario en inglés
+- [x] Probar con usuario en español
+- [x] Verificar fallback a inglés si idioma no soportado
+
+#### Pendiente (opcional)
+
+- [ ] Agregar scope `users.profile:read` en Slack App para detección automática de idioma
+- [ ] Reinstalar app en workspace después de agregar scope
 
 ### Archivos a Crear
 
