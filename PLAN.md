@@ -239,3 +239,199 @@ app_home_opened     # (opcional) para App Home tab
 - Testing en Slack de Koombea (canal privado)
 - Pulir UX y manejo de errores
 - Grabar demo para el concurso
+
+---
+
+## Feature: Internacionalización (i18n)
+
+### Objetivo
+Mostrar la interfaz en el idioma que el usuario tenga configurado en Slack (español, inglés, portugués, etc.)
+
+### Requisitos Previos
+
+1. **Agregar scope en Slack App:**
+   - Ir a api.slack.com → Tu app → OAuth & Permissions
+   - Agregar scope: `users.profile:read`
+   - Reinstalar la app en el workspace
+
+2. **Instalar dependencia:**
+   ```bash
+   npm install i18next
+   ```
+
+### Estructura de Archivos
+
+```
+src/
+├── locales/
+│   ├── en.json          # Inglés (default)
+│   ├── es.json          # Español
+│   └── pt-BR.json       # Portugués (opcional)
+├── services/
+│   └── i18n.js          # Servicio de traducciones
+```
+
+### Plan de Implementación
+
+#### Fase 1: Setup (~1 día)
+
+- [ ] Agregar scope `users.profile:read` en Slack App
+- [ ] Reinstalar app en workspace
+- [ ] Instalar `i18next`
+- [ ] Crear `src/services/i18n.js` con configuración base
+- [ ] Crear `src/locales/en.json` con todos los strings actuales
+- [ ] Crear `src/locales/es.json` con traducciones
+
+#### Fase 2: Integración (~1-2 días)
+
+- [ ] Crear helper `getLocale(userId, client)` para obtener idioma del usuario
+- [ ] Modificar `src/views/kudosModal.js` para recibir locale y traducir labels
+- [ ] Modificar `src/actions/submitKudos.js` para traducir mensajes
+- [ ] Modificar `src/commands/kudosStats.js` para traducir leaderboard
+- [ ] Modificar `src/commands/kudosExport.js` para traducir mensajes
+- [ ] Modificar `src/scheduler/leaderboardJob.js` (usar locale default del workspace)
+
+#### Fase 3: Testing
+
+- [ ] Probar con usuario en inglés
+- [ ] Probar con usuario en español
+- [ ] Verificar fallback a inglés si idioma no soportado
+
+### Archivos a Crear
+
+**`src/locales/en.json`**
+```json
+{
+  "modal": {
+    "title": "Give Kudos",
+    "submit": "Send Kudos",
+    "cancel": "Cancel",
+    "recipientLabel": "Who deserves kudos?",
+    "recipientPlaceholder": "Select people",
+    "messageLabel": "Why are you giving kudos?",
+    "messagePlaceholder": "Write something nice...",
+    "categoryLabel": "Category",
+    "categoryPlaceholder": "Select a category",
+    "channelLabel": "Post to channel",
+    "channelPlaceholder": "Select a channel",
+    "anonymousLabel": "Send anonymously?"
+  },
+  "kudos": {
+    "receivedTitle": "You received kudos! :tada:",
+    "channelMessage": "received kudos! :tada:",
+    "anonymous": "Anonymous",
+    "from": "From",
+    "reason": "Reason",
+    "category": "Category"
+  },
+  "leaderboard": {
+    "title": "Kudos Leaderboard - {{period}}",
+    "empty": "No kudos found for {{period}}. Be the first to give kudos! :star2:",
+    "periods": {
+      "week": "This Week",
+      "month": "This Month",
+      "all": "All Time"
+    }
+  },
+  "export": {
+    "exporting": ":hourglass_flowing_sand: Exporting kudos to Google Sheets...",
+    "success": ":white_check_mark: Export complete!",
+    "count": "Exported *{{count}}* kudos to Google Sheets.",
+    "openSheet": ":link: Open Google Sheet",
+    "error": ":x: Error exporting kudos: {{error}}"
+  }
+}
+```
+
+**`src/locales/es.json`**
+```json
+{
+  "modal": {
+    "title": "Dar Kudos",
+    "submit": "Enviar Kudos",
+    "cancel": "Cancelar",
+    "recipientLabel": "¿Quién merece kudos?",
+    "recipientPlaceholder": "Selecciona personas",
+    "messageLabel": "¿Por qué le das kudos?",
+    "messagePlaceholder": "Escribe algo lindo...",
+    "categoryLabel": "Categoría",
+    "categoryPlaceholder": "Selecciona una categoría",
+    "channelLabel": "Publicar en canal",
+    "channelPlaceholder": "Selecciona un canal",
+    "anonymousLabel": "¿Enviar anónimamente?"
+  },
+  "kudos": {
+    "receivedTitle": "¡Recibiste kudos! :tada:",
+    "channelMessage": "¡recibió kudos! :tada:",
+    "anonymous": "Anónimo",
+    "from": "De",
+    "reason": "Razón",
+    "category": "Categoría"
+  },
+  "leaderboard": {
+    "title": "Leaderboard de Kudos - {{period}}",
+    "empty": "No hay kudos para {{period}}. ¡Sé el primero en dar kudos! :star2:",
+    "periods": {
+      "week": "Esta Semana",
+      "month": "Este Mes",
+      "all": "Todo el Tiempo"
+    }
+  },
+  "export": {
+    "exporting": ":hourglass_flowing_sand: Exportando kudos a Google Sheets...",
+    "success": ":white_check_mark: ¡Exportación completa!",
+    "count": "Se exportaron *{{count}}* kudos a Google Sheets.",
+    "openSheet": ":link: Abrir Google Sheet",
+    "error": ":x: Error exportando kudos: {{error}}"
+  }
+}
+```
+
+**`src/services/i18n.js`**
+```javascript
+const i18next = require('i18next');
+const en = require('../locales/en.json');
+const es = require('../locales/es.json');
+
+i18next.init({
+  lng: 'en',
+  fallbackLng: 'en',
+  resources: {
+    en: { translation: en },
+    es: { translation: es }
+  },
+  interpolation: {
+    escapeValue: false
+  }
+});
+
+// Get user locale from Slack
+async function getLocale(userId, client) {
+  try {
+    const result = await client.users.info({ user: userId });
+    const locale = result.user?.locale || 'en';
+    // Map Slack locales to our supported locales
+    if (locale.startsWith('es')) return 'es';
+    if (locale.startsWith('pt')) return 'pt-BR';
+    return 'en';
+  } catch (error) {
+    console.error('Error getting user locale:', error);
+    return 'en';
+  }
+}
+
+// Translate helper
+function t(key, locale = 'en', options = {}) {
+  return i18next.t(key, { lng: locale, ...options });
+}
+
+module.exports = { getLocale, t, i18next };
+```
+
+### Notas Importantes
+
+- El locale de Slack viene en formato como `en-US`, `es-ES`, `es-LA`, `pt-BR`
+- Debemos mapear a nuestros idiomas soportados (ej: `es-*` → `es`)
+- Si el idioma no está soportado, fallback a inglés
+- Las categorías en DB siguen en inglés (no se traducen por ahora)
+- Para el scheduler mensual, usar inglés por defecto o configurar locale del workspace

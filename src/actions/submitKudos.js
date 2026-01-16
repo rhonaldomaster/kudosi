@@ -1,4 +1,5 @@
 const { createKudos, addKudosRecipients, markRecipientsNotified } = require('../db/queries');
+const { getLocale, t } = require('../services/i18n');
 
 const registerSubmitKudos = (app) => {
   app.view('kudos_modal_submit', async ({ ack, body, view, client }) => {
@@ -18,14 +19,16 @@ const registerSubmitKudos = (app) => {
 
       // Format recipients as mentions
       const recipientMentions = recipients.map(id => `<@${id}>`).join(', ');
+      const anonymousText = (locale) => t('kudos.anonymous', locale);
+      const fromText = (locale) => t('kudos.from', locale);
 
-      // Build the kudos message
+      // Build the kudos message (channel uses English as default for mixed-language workspaces)
       const kudosBlocks = [
         {
           type: 'section',
           text: {
             type: 'mrkdwn',
-            text: `*${recipientMentions}* received kudos! :tada:`,
+            text: `*${recipientMentions}* ${t('kudos.channelMessage', 'en')}`,
           },
         },
         {
@@ -40,7 +43,7 @@ const registerSubmitKudos = (app) => {
           elements: [
             {
               type: 'mrkdwn',
-              text: `${category.text.text} | From: ${isAnonymous ? '_Anonymous_' : `<@${senderId}>`}`,
+              text: `${category.text.text} | ${fromText('en')}: ${isAnonymous ? `_${anonymousText('en')}_` : `<@${senderId}>`}`,
             },
           ],
         },
@@ -49,25 +52,28 @@ const registerSubmitKudos = (app) => {
       // Post kudos to the selected channel
       await client.chat.postMessage({
         channel: channelId,
-        text: `${recipientMentions} received kudos!`,
+        text: `${recipientMentions} ${t('kudos.channelMessage', 'en')}`,
         blocks: kudosBlocks,
       });
 
-      // Send DM to each recipient
+      // Send DM to each recipient (in their language)
       for (const recipientId of recipients) {
         // Don't DM yourself if you're giving kudos to yourself
         if (recipientId === senderId && !isAnonymous) continue;
 
         try {
+          // Get recipient's locale for personalized DM
+          const recipientLocale = await getLocale(recipientId, client);
+
           await client.chat.postMessage({
             channel: recipientId,
-            text: `You received kudos! :tada:`,
+            text: t('kudos.receivedTitle', recipientLocale),
             blocks: [
               {
                 type: 'section',
                 text: {
                   type: 'mrkdwn',
-                  text: `:tada: *You received kudos!*`,
+                  text: `:tada: *${t('kudos.receivedTitle', recipientLocale)}*`,
                 },
               },
               {
@@ -82,7 +88,7 @@ const registerSubmitKudos = (app) => {
                 elements: [
                   {
                     type: 'mrkdwn',
-                    text: `${category.text.text} | From: ${isAnonymous ? '_Anonymous_' : `<@${senderId}>`}`,
+                    text: `${category.text.text} | ${fromText(recipientLocale)}: ${isAnonymous ? `_${anonymousText(recipientLocale)}_` : `<@${senderId}>`}`,
                   },
                 ],
               },

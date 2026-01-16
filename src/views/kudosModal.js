@@ -1,18 +1,20 @@
-const buildKudosModal = (categories = []) => {
+const { t } = require('../services/i18n');
+
+const buildKudosModal = (categories = [], locale = 'en') => {
   return {
     type: 'modal',
     callback_id: 'kudos_modal_submit',
     title: {
       type: 'plain_text',
-      text: 'Give Kudos',
+      text: t('modal.title', locale),
     },
     submit: {
       type: 'plain_text',
-      text: 'Send Kudos',
+      text: t('modal.submit', locale),
     },
     close: {
       type: 'plain_text',
-      text: 'Cancel',
+      text: t('modal.cancel', locale),
     },
     blocks: [
       {
@@ -20,14 +22,14 @@ const buildKudosModal = (categories = []) => {
         block_id: 'recipients_block',
         label: {
           type: 'plain_text',
-          text: 'Who deserves kudos?',
+          text: t('modal.recipientLabel', locale),
         },
         element: {
           type: 'multi_users_select',
           action_id: 'recipients',
           placeholder: {
             type: 'plain_text',
-            text: 'Select people',
+            text: t('modal.recipientPlaceholder', locale),
           },
         },
       },
@@ -36,7 +38,7 @@ const buildKudosModal = (categories = []) => {
         block_id: 'message_block',
         label: {
           type: 'plain_text',
-          text: 'Why are you giving kudos?',
+          text: t('modal.messageLabel', locale),
         },
         element: {
           type: 'plain_text_input',
@@ -44,7 +46,7 @@ const buildKudosModal = (categories = []) => {
           multiline: true,
           placeholder: {
             type: 'plain_text',
-            text: 'Share what they did and why it matters...',
+            text: t('modal.messagePlaceholder', locale),
           },
         },
       },
@@ -53,14 +55,14 @@ const buildKudosModal = (categories = []) => {
         block_id: 'category_block',
         label: {
           type: 'plain_text',
-          text: 'Category',
+          text: t('modal.categoryLabel', locale),
         },
         element: {
           type: 'static_select',
           action_id: 'category',
           placeholder: {
             type: 'plain_text',
-            text: 'Select a category',
+            text: t('modal.categoryPlaceholder', locale),
           },
           options: categories.length > 0
             ? categories.map(cat => ({
@@ -84,14 +86,14 @@ const buildKudosModal = (categories = []) => {
         block_id: 'channel_block',
         label: {
           type: 'plain_text',
-          text: 'Post to channel',
+          text: t('modal.channelLabel', locale),
         },
         element: {
           type: 'conversations_select',
           action_id: 'channel',
           placeholder: {
             type: 'plain_text',
-            text: 'Select a channel',
+            text: t('modal.channelPlaceholder', locale),
           },
           default_to_current_conversation: true,
           filter: {
@@ -105,7 +107,7 @@ const buildKudosModal = (categories = []) => {
         block_id: 'anonymous_block',
         label: {
           type: 'plain_text',
-          text: 'Send anonymously?',
+          text: t('modal.anonymousLabel', locale),
         },
         optional: true,
         element: {
@@ -115,7 +117,7 @@ const buildKudosModal = (categories = []) => {
             {
               text: {
                 type: 'plain_text',
-                text: 'Yes, send this kudos anonymously',
+                text: locale === 'es' ? 'Sí, enviar este kudos de forma anónima' : 'Yes, send this kudos anonymously',
               },
               value: 'anonymous',
             },

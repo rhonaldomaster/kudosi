@@ -1,4 +1,5 @@
 const { getLeaderboard } = require('../db/queries');
+const { getLocale, t } = require('../services/i18n');
 
 const registerKudosStatsCommand = (app) => {
   app.command('/kudos-stats', async ({ ack, body, client, command }) => {
@@ -6,27 +7,29 @@ const registerKudosStatsCommand = (app) => {
 
     try {
       const arg = command.text?.trim().toLowerCase() || 'all';
+      const locale = await getLocale(body.user_id, client);
 
       let since = null;
-      let periodLabel = 'All Time';
+      let periodKey = 'all';
 
       if (arg === 'week') {
         since = new Date();
         since.setDate(since.getDate() - 7);
-        periodLabel = 'This Week';
+        periodKey = 'week';
       } else if (arg === 'month') {
         since = new Date();
         since.setMonth(since.getMonth() - 1);
-        periodLabel = 'This Month';
+        periodKey = 'month';
       }
 
+      const periodLabel = t(`leaderboard.periods.${periodKey}`, locale);
       const leaderboard = await getLeaderboard(10, since);
 
       if (leaderboard.length === 0) {
         await client.chat.postEphemeral({
           channel: body.channel_id,
           user: body.user_id,
-          text: `No kudos found for ${periodLabel.toLowerCase()}. Be the first to give kudos! :star2:`,
+          text: t('leaderboard.empty', locale, { period: periodLabel.toLowerCase() }),
         });
         return;
       }
@@ -44,7 +47,7 @@ const registerKudosStatsCommand = (app) => {
           type: 'header',
           text: {
             type: 'plain_text',
-            text: `Kudos Leaderboard - ${periodLabel}`,
+            text: t('leaderboard.title', locale, { period: periodLabel }),
           },
         },
         {
@@ -68,7 +71,7 @@ const registerKudosStatsCommand = (app) => {
       await client.chat.postEphemeral({
         channel: body.channel_id,
         user: body.user_id,
-        text: `Kudos Leaderboard - ${periodLabel}`,
+        text: t('leaderboard.title', locale, { period: periodLabel }),
         blocks,
       });
 

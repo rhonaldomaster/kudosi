@@ -1,15 +1,18 @@
 const { exportToSheets } = require('../services/sheetsExport');
+const { getLocale, t } = require('../services/i18n');
 
 const registerKudosExportCommand = (app) => {
   app.command('/kudos-export', async ({ ack, body, client }) => {
     await ack();
+
+    const locale = await getLocale(body.user_id, client);
 
     try {
       // Send initial message
       await client.chat.postEphemeral({
         channel: body.channel_id,
         user: body.user_id,
-        text: ':hourglass_flowing_sand: Exporting kudos to Google Sheets...',
+        text: t('export.exporting', locale),
       });
 
       const result = await exportToSheets(client);
@@ -17,20 +20,20 @@ const registerKudosExportCommand = (app) => {
       await client.chat.postEphemeral({
         channel: body.channel_id,
         user: body.user_id,
-        text: `:white_check_mark: Export complete!`,
+        text: t('export.success', locale),
         blocks: [
           {
             type: 'section',
             text: {
               type: 'mrkdwn',
-              text: `:white_check_mark: *Export complete!*\n\nExported *${result.rowCount}* kudos to Google Sheets.`,
+              text: `${t('export.success', locale)}\n\n${t('export.count', locale, { count: result.rowCount })}`,
             },
           },
           {
             type: 'section',
             text: {
               type: 'mrkdwn',
-              text: `<${result.spreadsheetUrl}|:link: Open Google Sheet>`,
+              text: `<${result.spreadsheetUrl}|${t('export.openSheet', locale)}>`,
             },
           },
         ],
@@ -42,7 +45,7 @@ const registerKudosExportCommand = (app) => {
       await client.chat.postEphemeral({
         channel: body.channel_id,
         user: body.user_id,
-        text: `:x: Error exporting kudos: ${error.message}`,
+        text: t('export.error', locale, { error: error.message }),
       });
     }
   });

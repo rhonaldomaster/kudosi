@@ -1,0 +1,48 @@
+{
+  "modal": {
+    "title": "Dar Kudos",
+    "submit": "Enviar Kudos",
+    "cancel": "Cancelar",
+    "recipientLabel": "¿Quién merece kudos?",
+    "recipientPlaceholder": "Selecciona personas",
+    "messageLabel": "¿Por qué le das kudos?",
+    "messagePlaceholder": "Escribe algo lindo...",
+    "categoryLabel": "Categoría",
+    "categoryPlaceholder": "Selecciona una categoría",
+    "channelLabel": "Publicar en canal",
+    "channelPlaceholder": "Selecciona un canal",
+    "anonymousLabel": "¿Enviar anónimamente?"
+  },
+  "kudos": {
+    "receivedTitle": "¡Recibiste kudos! :tada:",
+    "channelMessage": "¡recibió kudos! :tada:",
+    "anonymous": "Anónimo",
+    "from": "De",
+    "reason": "Razón",
+    "category": "Categoría"
+  },
+  "leaderboard": {
+    "title": "Leaderboard de Kudos - {{period}}",
+    "empty": "No hay kudos para {{period}}. ¡Sé el primero en dar kudos! :star2:",
+    "periods": {
+      "week": "Esta Semana",
+      "month": "Este Mes",
+      "all": "Todo el Tiempo"
+    },
+    "monthly": {
+      "title": "Leaderboard de Kudos - {{month}}",
+      "congrats": "¡Felicitaciones a los que más kudos recibieron el mes pasado!",
+      "footer": "Da kudos con `/kudos` | Ve estadísticas con `/kudos-stats`"
+    }
+  },
+  "export": {
+    "exporting": ":hourglass_flowing_sand: Exportando kudos a Google Sheets...",
+    "success": ":white_check_mark: ¡Exportación completa!",
+    "count": "Se exportaron *{{count}}* kudos a Google Sheets.",
+    "openSheet": ":link: Abrir Google Sheet",
+    "error": ":x: Error exportando kudos: {{error}}"
+  },
+  "errors": {
+    "generic": "Algo salió mal. Por favor intenta de nuevo."
+  }
+}
