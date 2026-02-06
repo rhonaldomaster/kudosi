@@ -14,12 +14,22 @@ const registerSubmitKudos = (app) => {
       const message = values.message_block.message.value;
       const category = values.category_block.category.selected_option;
       const channelId = values.channel_block.channel.selected_conversation;
-      const isAnonymous = values.anonymous_block.anonymous.selected_options?.length > 0;
       const categoryId = parseInt(category.value) || null;
+
+      // Resolve selected GIF URL from private_metadata
+      let selectedGif = null;
+      const gifId = values.gif_selection_block?.gif_selection?.selected_option?.value || null;
+      if (gifId && view.private_metadata) {
+        try {
+          const metadata = JSON.parse(view.private_metadata);
+          selectedGif = metadata.gifMap?.[gifId] || null;
+        } catch (e) {
+          // Ignore parse errors
+        }
+      }
 
       // Format recipients as mentions
       const recipientMentions = recipients.map(id => `<@${id}>`).join(', ');
-      const anonymousText = (locale) => t('kudos.anonymous', locale);
       const fromText = (locale) => t('kudos.from', locale);
 
       // Build the kudos message (channel uses English as default for mixed-language workspaces)
@@ -43,11 +53,20 @@ const registerSubmitKudos = (app) => {
           elements: [
             {
               type: 'mrkdwn',
-              text: `${category.text.text} | ${fromText('en')}: ${isAnonymous ? `_${anonymousText('en')}_` : `<@${senderId}>`}`,
+              text: `${category.text.text} | ${fromText('en')}: <@${senderId}>`,
             },
           ],
         },
       ];
+
+      // Add GIF image block if selected
+      if (selectedGif) {
+        kudosBlocks.push({
+          type: 'image',
+          image_url: selectedGif,
+          alt_text: 'Kudos GIF',
+        });
+      }
 
       // Post kudos to the selected channel
       await client.chat.postMessage({
@@ -59,40 +78,51 @@ const registerSubmitKudos = (app) => {
       // Send DM to each recipient (in their language)
       for (const recipientId of recipients) {
         // Don't DM yourself if you're giving kudos to yourself
-        if (recipientId === senderId && !isAnonymous) continue;
+        if (recipientId === senderId) continue;
 
         try {
           // Get recipient's locale for personalized DM
           const recipientLocale = await getLocale(recipientId, client);
 
+          const dmBlocks = [
+            {
+              type: 'section',
+              text: {
+                type: 'mrkdwn',
+                text: `:tada: *${t('kudos.receivedTitle', recipientLocale)}*`,
+              },
+            },
+            {
+              type: 'section',
+              text: {
+                type: 'mrkdwn',
+                text: `> ${message}`,
+              },
+            },
+            {
+              type: 'context',
+              elements: [
+                {
+                  type: 'mrkdwn',
+                  text: `${category.text.text} | ${fromText(recipientLocale)}: <@${senderId}>`,
+                },
+              ],
+            },
+          ];
+
+          // Add GIF image block if selected
+          if (selectedGif) {
+            dmBlocks.push({
+              type: 'image',
+              image_url: selectedGif,
+              alt_text: 'Kudos GIF',
+            });
+          }
+
           await client.chat.postMessage({
             channel: recipientId,
             text: t('kudos.receivedTitle', recipientLocale),
-            blocks: [
-              {
-                type: 'section',
-                text: {
-                  type: 'mrkdwn',
-                  text: `:tada: *${t('kudos.receivedTitle', recipientLocale)}*`,
-                },
-              },
-              {
-                type: 'section',
-                text: {
-                  type: 'mrkdwn',
-                  text: `> ${message}`,
-                },
-              },
-              {
-                type: 'context',
-                elements: [
-                  {
-                    type: 'mrkdwn',
-                    text: `${category.text.text} | ${fromText(recipientLocale)}: ${isAnonymous ? `_${anonymousText(recipientLocale)}_` : `<@${senderId}>`}`,
-                  },
-                ],
-              },
-            ],
+            blocks: dmBlocks,
           });
         } catch (dmError) {
           console.error(`Error sending DM to ${recipientId}:`, dmError);
@@ -102,7 +132,6 @@ const registerSubmitKudos = (app) => {
       // Save to database
       const kudos = await createKudos({
         senderId,
-        isAnonymous,
         message,
         categoryId,
         channelId,
