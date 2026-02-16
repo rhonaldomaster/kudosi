@@ -9,12 +9,12 @@ const getActiveCategories = async () => {
 };
 
 // Kudos
-const createKudos = async ({ senderId, isAnonymous, message, categoryId, channelId }) => {
+const createKudos = async ({ senderId, message, categoryId, channelId }) => {
   const result = await db.query(
     `INSERT INTO kudos (sender_id, is_anonymous, message, category_id, channel_id)
      VALUES ($1, $2, $3, $4, $5)
      RETURNING id`,
-    [isAnonymous ? null : senderId, isAnonymous, message, categoryId, channelId]
+    [senderId, false, message, categoryId, channelId]
   );
   return result.rows[0];
 };

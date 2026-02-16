@@ -11,12 +11,22 @@
     "categoryPlaceholder": "Selecciona una categoría",
     "channelLabel": "Publicar en canal",
     "channelPlaceholder": "Selecciona un canal",
-    "anonymousLabel": "¿Enviar anónimamente?"
+    "gifSectionTitle": "*Agregar un GIF (Opcional)*",
+    "gifSearchLabel": "Buscar GIFs",
+    "gifSearchPlaceholder": "Escribe una palabra clave (ej: 'celebración', 'gracias')",
+    "gifSearchButton": "Buscar GIFs",
+    "gifResultsTitle": "*Selecciona un GIF:*",
+    "gifSelectionLabel": "Elige uno",
+    "deliveryLabel": "Entrega",
+    "deliveryChannel": "Publicar en canal",
+    "deliveryPrivate": "Enviar en privado (solo DM)",
+    "imageUrlLabel": "O pega una URL de imagen",
+    "imageUrlPlaceholder": "https://ejemplo.com/imagen.gif",
+    "imageSectionTitle": "*Imagen Personalizada (Opcional)*"
   },
   "kudos": {
     "receivedTitle": "¡Recibiste kudos! :tada:",
     "channelMessage": "¡recibió kudos! :tada:",
-    "anonymous": "Anónimo",
     "from": "De",
     "reason": "Razón",
     "category": "Categoría"

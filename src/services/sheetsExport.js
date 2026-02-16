@@ -53,14 +53,13 @@ const exportToSheets = async (slackClient) => {
     'Message',
     'Category',
     'Channel',
-    'Anonymous',
   ];
 
   // Prepare data rows
   const rows = await Promise.all(kudos.map(async (k) => {
     // Get user names from Slack
-    let senderName = 'Anonymous';
-    if (!k.is_anonymous && k.sender_id) {
+    let senderName = k.sender_id || 'Unknown';
+    if (k.sender_id) {
       try {
         const senderInfo = await slackClient.users.info({ user: k.sender_id });
         senderName = senderInfo.user?.real_name || senderInfo.user?.name || k.sender_id;
@@ -98,7 +97,6 @@ const exportToSheets = async (slackClient) => {
       k.message,
       k.category_emoji ? `${k.category_emoji} ${k.category_name}` : k.category_name || '',
       channelName,
-      k.is_anonymous ? 'Yes' : 'No',
     ];
   }));
 

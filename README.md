@@ -1,6 +1,6 @@
 # Kudos Slack App
 
-A Slack application for employee recognition (kudos) at Koombea. Allows team members to recognize colleagues through an interactive modal experience with support for anonymous recognition, leaderboards, and Google Sheets export.
+A Slack application for employee recognition (kudos) at Koombea. Allows team members to recognize colleagues through an interactive modal experience with GIF search, leaderboards, and Google Sheets export.
 
 ## Tech Stack
 
@@ -14,9 +14,10 @@ A Slack application for employee recognition (kudos) at Koombea. Allows team mem
 ## Features
 
 - **Give Kudos** - Send recognition to one or multiple colleagues
-- **Anonymous Mode** - Option to send kudos anonymously
-- **Categories** - 5 predefined categories (Teamwork, Innovation, Helping Hand, Leadership, Going Extra Mile)
-- **Channel Selection** - Choose where to post the kudos
+- **Categories** - Configurable kudos categories (Teamwork, Innovation, etc.)
+- **Delivery Mode** - Post to a channel or send privately via DM only
+- **GIF Search** - Search and attach Giphy GIFs to kudos
+- **Custom Image URL** - Paste an image URL as an alternative to GIF search
 - **DM Notifications** - Recipients receive individual notifications
 - **Leaderboard** - View top kudos recipients by week, month, or all-time
 - **Monthly Reports** - Automatic leaderboard posts on the 1st of each month
@@ -35,8 +36,10 @@ src/
 ├── views/
 │   └── kudosModal.js         # Block Kit modal builder
 ├── actions/
-│   └── submitKudos.js        # Modal submission handler
+│   ├── submitKudos.js        # Modal submission handler
+│   └── searchGifs.js         # GIF search action handler
 ├── services/
+│   ├── giphy.js              # Giphy API integration
 │   ├── i18n.js               # Internationalization setup
 │   └── sheetsExport.js       # Google Sheets integration
 ├── db/
@@ -101,6 +104,7 @@ src/
 | Variable | Description |
 |----------|-------------|
 | `PORT` | Server port (default: 3000) |
+| `GIPHY_API_KEY` | Giphy API key for GIF search |
 | `LEADERBOARD_CHANNEL_ID` | Channel ID for monthly leaderboard posts |
 | `GOOGLE_SHEETS_ID` | Google Spreadsheet ID for exports |
 | `GOOGLE_CREDENTIALS_PATH` | Path to Google Service Account JSON |
