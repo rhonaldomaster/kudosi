@@ -16,7 +16,13 @@
     "gifSearchPlaceholder": "Escribe una palabra clave (ej: 'celebración', 'gracias')",
     "gifSearchButton": "Buscar GIFs",
     "gifResultsTitle": "*Selecciona un GIF:*",
-    "gifSelectionLabel": "Elige uno"
+    "gifSelectionLabel": "Elige uno",
+    "deliveryLabel": "Entrega",
+    "deliveryChannel": "Publicar en canal",
+    "deliveryPrivate": "Enviar en privado (solo DM)",
+    "imageUrlLabel": "O pega una URL de imagen",
+    "imageUrlPlaceholder": "https://ejemplo.com/imagen.gif",
+    "imageSectionTitle": "*Imagen Personalizada (Opcional)*"
   },
   "kudos": {
     "receivedTitle": "¡Recibiste kudos! :tada:",

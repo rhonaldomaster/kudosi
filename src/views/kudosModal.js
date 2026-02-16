@@ -61,6 +61,25 @@ const buildKudosModal = (categories = [], locale = 'en', currentValues = {}, gif
     }
   }
 
+  // Delivery mode block
+  const deliveryOptions = [
+    {
+      text: { type: 'plain_text', text: t('modal.deliveryChannel', locale) },
+      value: 'channel',
+    },
+    {
+      text: { type: 'plain_text', text: t('modal.deliveryPrivate', locale) },
+      value: 'private',
+    },
+  ];
+
+  const deliveryElement = {
+    type: 'radio_buttons',
+    action_id: 'delivery',
+    options: deliveryOptions,
+    initial_option: deliveryOptions.find(o => o.value === (currentValues.delivery || 'channel')),
+  };
+
   // Channel block
   const channelElement = {
     type: 'conversations_select',
@@ -76,8 +95,19 @@ const buildKudosModal = (categories = [], locale = 'en', currentValues = {}, gif
   };
   if (currentValues.channel) {
     channelElement.initial_conversation = currentValues.channel;
-  } else {
-    channelElement.default_to_current_conversation = true;
+  }
+
+  // Image URL input
+  const imageUrlElement = {
+    type: 'plain_text_input',
+    action_id: 'image_url',
+    placeholder: {
+      type: 'plain_text',
+      text: t('modal.imageUrlPlaceholder', locale),
+    },
+  };
+  if (currentValues.imageUrl) {
+    imageUrlElement.initial_value = currentValues.imageUrl;
   }
 
   // GIF search input
@@ -124,7 +154,17 @@ const buildKudosModal = (categories = [], locale = 'en', currentValues = {}, gif
     },
     {
       type: 'input',
+      block_id: 'delivery_block',
+      label: {
+        type: 'plain_text',
+        text: t('modal.deliveryLabel', locale),
+      },
+      element: deliveryElement,
+    },
+    {
+      type: 'input',
       block_id: 'channel_block',
+      optional: true,
       label: {
         type: 'plain_text',
         text: t('modal.channelLabel', locale),
@@ -225,6 +265,21 @@ const buildKudosModal = (categories = [], locale = 'en', currentValues = {}, gif
       });
     }
   }
+
+  // Image URL field always at the bottom
+  blocks.push({
+    type: 'divider',
+  });
+  blocks.push({
+    type: 'input',
+    block_id: 'image_url_block',
+    optional: true,
+    label: {
+      type: 'plain_text',
+      text: t('modal.imageUrlLabel', locale),
+    },
+    element: imageUrlElement,
+  });
 
   const modal = {
     type: 'modal',

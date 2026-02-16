@@ -17,9 +17,11 @@ const registerSearchGifs = (app) => {
         recipients: values.recipients_block?.recipients?.selected_users || [],
         message: values.message_block?.message?.value || '',
         category: values.category_block?.category?.selected_option?.value || null,
+        delivery: values.delivery_block?.delivery?.selected_option?.value || 'channel',
         channel: values.channel_block?.channel?.selected_conversation || null,
         gifQuery: values.gif_search_block?.gif_search_input?.value || '',
         selectedGif: values.gif_selection_block?.gif_selection?.selected_option?.value || null, // GIF ID
+        imageUrl: values.image_url_block?.image_url?.value || '',
       };
 
       const query = currentValues.gifQuery;
