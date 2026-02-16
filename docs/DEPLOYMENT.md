@@ -62,22 +62,33 @@ If you want the export feature:
    https://docs.google.com/spreadsheets/d/[SHEET_ID_HERE]/edit
    ```
 
-## Step 3: Deploy to Railway
+## Step 3: Setup Giphy (Optional)
 
-### 3.1 Create Railway Project
+If you want the GIF search feature in the kudos modal:
+
+1. Go to https://developers.giphy.com and sign in (or create an account)
+2. Click **Create an App**
+3. Select **API** (not SDK)
+4. Give it a name and description
+5. Copy the **API Key** from your app dashboard
+6. Add it as `GIPHY_API_KEY` in your environment variables
+
+## Step 4: Deploy to Railway
+
+### 4.1 Create Railway Project
 
 1. Go to https://railway.app and sign in
 2. Click **New Project**
 3. Select **Deploy from GitHub repo**
 4. Connect your GitHub account and select the `kudos` repository
 
-### 3.2 Add PostgreSQL Database
+### 4.2 Add PostgreSQL Database
 
 1. In your Railway project, click **New**
 2. Select **Database** > **Add PostgreSQL**
 3. Railway will automatically provide `DATABASE_URL`
 
-### 3.3 Configure Environment Variables
+### 4.3 Configure Environment Variables
 
 In Railway, go to your service and click **Variables**. Add:
 
@@ -91,6 +102,9 @@ SLACK_APP_TOKEN=xapp-your-app-token
 PORT=3000
 NODE_ENV=production
 
+# Giphy (optional - for GIF search in kudos modal)
+GIPHY_API_KEY=your-giphy-api-key
+
 # Scheduler (optional - for automatic monthly leaderboard)
 LEADERBOARD_CHANNEL_ID=C0123456789
 
@@ -101,7 +115,7 @@ GOOGLE_CREDENTIALS_JSON={"type":"service_account",...}
 
 **Note:** For Google credentials in Railway, paste the entire JSON content as `GOOGLE_CREDENTIALS_JSON` instead of using a file path.
 
-### 3.4 Run Database Migration
+### 4.4 Run Database Migration
 
 Option A: Using Railway CLI
 ```bash
@@ -114,15 +128,15 @@ Option B: Using Railway Dashboard
 3. Open **Query** and paste the contents of `001_initial.sql`
 4. Execute the query
 
-### 3.5 Deploy
+### 4.5 Deploy
 
 Railway automatically deploys when you push to your connected branch. You can also:
 1. Go to **Deployments** tab
 2. Click **Deploy** to trigger manually
 
-## Step 4: Verify Deployment
+## Step 5: Verify Deployment
 
-### 4.1 Check Logs
+### 5.1 Check Logs
 
 In Railway, go to **Deployments** > select latest > **View Logs**
 
@@ -131,7 +145,7 @@ You should see:
 Kudos app is running on port 3000
 ```
 
-### 4.2 Test in Slack
+### 5.2 Test in Slack
 
 1. Go to your Slack workspace
 2. Type `/kudos` - should open the modal
@@ -149,6 +163,7 @@ Kudos app is running on port 3000
 | `DATABASE_URL` | Yes | PostgreSQL connection string (auto-provided by Railway) |
 | `PORT` | No | Server port (default: 3000) |
 | `NODE_ENV` | No | `development` or `production` |
+| `GIPHY_API_KEY` | No | Giphy API key for GIF search in kudos modal |
 | `LEADERBOARD_CHANNEL_ID` | No | Channel for scheduled leaderboard posts |
 | `GOOGLE_SHEETS_ID` | No | Google Sheet ID for export |
 | `GOOGLE_CREDENTIALS_JSON` | No | Service account JSON (for production) |
