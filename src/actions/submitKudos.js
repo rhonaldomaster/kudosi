@@ -29,9 +29,21 @@ const registerSubmitKudos = (app) => {
         }
       }
 
-      // Image URL fallback: GIF takes priority over custom image URL
+      // Resolve selected Image Bank URL from private_metadata
+      let selectedBankImage = null;
+      const bankImageId = values.image_bank_block?.image_bank_selection?.selected_option?.value || null;
+      if (bankImageId && view.private_metadata) {
+        try {
+          const metadata = JSON.parse(view.private_metadata);
+          selectedBankImage = metadata.imageBankMap?.[bankImageId] || null;
+        } catch (e) {
+          // Ignore parse errors
+        }
+      }
+
+      // Image priority: GIF > Image Bank > Custom URL
       const imageUrl = values.image_url_block?.image_url?.value || null;
-      const finalImage = selectedGif || imageUrl || null;
+      const finalImage = selectedGif || selectedBankImage || imageUrl || null;
 
       // Format recipients as mentions
       const recipientMentions = recipients.map(id => `<@${id}>`).join(', ');

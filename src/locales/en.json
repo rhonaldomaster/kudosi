@@ -22,7 +22,10 @@
     "deliveryPrivate": "Send privately (DM only)",
     "imageUrlLabel": "Or paste an image URL",
     "imageUrlPlaceholder": "https://example.com/image.gif",
-    "imageSectionTitle": "*Custom Image (Optional)*"
+    "imageSectionTitle": "*Custom Image (Optional)*",
+    "imageBankSectionTitle": "*Image Bank (Optional)*",
+    "imageBankLabel": "Choose an image",
+    "imageBankPlaceholder": "Select an image from the bank"
   },
   "kudos": {
     "receivedTitle": "You received kudos! :tada:",

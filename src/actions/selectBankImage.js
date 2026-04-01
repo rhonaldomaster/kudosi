@@ -1,10 +1,9 @@
-const { searchGifs } = require('../services/giphy');
 const { buildKudosModal } = require('../views/kudosModal');
 const { getActiveCategories, getActiveImages } = require('../db/queries');
 const { getLocale } = require('../services/i18n');
 
-const registerSearchGifs = (app) => {
-  app.action('search_gifs_button', async ({ ack, body, client }) => {
+const registerSelectBankImage = (app) => {
+  app.action('image_bank_selection', async ({ ack, body, client }) => {
     await ack();
 
     try {
@@ -20,28 +19,35 @@ const registerSearchGifs = (app) => {
         delivery: values.delivery_block?.delivery?.selected_option?.value || 'channel',
         channel: values.channel_block?.channel?.selected_conversation || null,
         gifQuery: values.gif_search_block?.gif_search_input?.value || '',
-        selectedGif: values.gif_selection_block?.gif_selection?.selected_option?.value || null, // GIF ID
+        selectedGif: values.gif_selection_block?.gif_selection?.selected_option?.value || null,
         imageUrl: values.image_url_block?.image_url?.value || '',
         selectedBankImage: values.image_bank_block?.image_bank_selection?.selected_option?.value || null,
       };
 
-      const query = currentValues.gifQuery;
-
-      if (!query) {
-        return;
+      // Restore GIF results from private_metadata
+      let gifResults = [];
+      if (view.private_metadata) {
+        try {
+          const metadata = JSON.parse(view.private_metadata);
+          if (metadata.gifMap) {
+            gifResults = Object.entries(metadata.gifMap).map(([id, url]) => ({
+              id,
+              title: `GIF`,
+              previewUrl: url,
+              originalUrl: url,
+            }));
+          }
+        } catch (e) {
+          // Ignore parse errors
+        }
       }
 
-      // Fetch categories, locale, and bank images
       const [categories, locale, bankImages] = await Promise.all([
         getActiveCategories(),
         getLocale(userId, client),
         getActiveImages(),
       ]);
 
-      // Search GIFs
-      const gifResults = await searchGifs(query);
-
-      // Update modal with GIF results
       const gifEnabled = !!process.env.GIPHY_API_KEY;
       const updatedModal = buildKudosModal(categories, locale, currentValues, gifResults, bankImages, gifEnabled);
 
@@ -51,12 +57,9 @@ const registerSearchGifs = (app) => {
         view: updatedModal,
       });
     } catch (error) {
-      console.error('Error searching GIFs:', error);
-      if (error.data?.response_metadata?.messages) {
-        console.error('Slack validation errors:', JSON.stringify(error.data.response_metadata.messages, null, 2));
-      }
+      console.error('Error updating image bank preview:', error);
     }
   });
 };
 
-module.exports = { registerSearchGifs };
+module.exports = { registerSelectBankImage };

@@ -1,5 +1,13 @@
 const db = require('./connection');
 
+// Image Bank
+const getActiveImages = async () => {
+  const result = await db.query(
+    'SELECT id, title, url, category FROM image_bank WHERE active = true ORDER BY category, title'
+  );
+  return result.rows;
+};
+
 // Categories
 const getActiveCategories = async () => {
   const result = await db.query(
@@ -79,6 +87,7 @@ const getLeaderboard = async (limit = 10, since = null) => {
 };
 
 module.exports = {
+  getActiveImages,
   getActiveCategories,
   createKudos,
   addKudosRecipients,
