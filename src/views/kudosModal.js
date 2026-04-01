@@ -318,6 +318,7 @@ const buildKudosModal = (categories = [], locale = 'en', currentValues = {}, gif
       type: 'input',
       block_id: 'image_bank_block',
       optional: true,
+      dispatch_action: true,
       label: {
         type: 'plain_text',
         text: t('modal.imageBankLabel', locale),
