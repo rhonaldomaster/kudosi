@@ -87,11 +87,22 @@ const registerSubmitKudos = (app) => {
 
       // Post kudos to the selected channel (skip if private delivery)
       if (delivery === 'channel' && channelId) {
-        await client.chat.postMessage({
-          channel: channelId,
-          text: `${recipientMentions} ${t('kudos.channelMessage', 'en')}`,
-          blocks: kudosBlocks,
-        });
+        try {
+          await client.chat.postMessage({
+            channel: channelId,
+            text: `${recipientMentions} ${t('kudos.channelMessage', 'en')}`,
+            blocks: kudosBlocks,
+          });
+        } catch (channelError) {
+          if (channelError.data?.error === 'channel_not_found' || channelError.data?.error === 'not_in_channel') {
+            await client.chat.postMessage({
+              channel: senderId,
+              text: `Your kudos could not be posted to the selected channel. If it's a private channel, please invite the app first by typing \`/invite @${process.env.SLACK_BOT_NAME || 'Kudos'}\` in that channel, then try again.`,
+            });
+            return;
+          }
+          throw channelError;
+        }
       }
 
       // Send DM to each recipient (in their language)
