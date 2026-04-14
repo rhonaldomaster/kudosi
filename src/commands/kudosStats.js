@@ -25,12 +25,22 @@ const registerKudosStatsCommand = (app) => {
       const periodLabel = t(`leaderboard.periods.${periodKey}`, locale);
       const leaderboard = await getLeaderboard(10, since);
 
+      // DM channels start with 'D' — postEphemeral doesn't work there
+      const isDM = body.channel_id?.startsWith('D');
+
       if (leaderboard.length === 0) {
-        await client.chat.postEphemeral({
-          channel: body.channel_id,
-          user: body.user_id,
-          text: t('leaderboard.empty', locale, { period: periodLabel.toLowerCase() }),
-        });
+        if (isDM) {
+          await client.chat.postMessage({
+            channel: body.user_id,
+            text: t('leaderboard.empty', locale, { period: periodLabel.toLowerCase() }),
+          });
+        } else {
+          await client.chat.postEphemeral({
+            channel: body.channel_id,
+            user: body.user_id,
+            text: t('leaderboard.empty', locale, { period: periodLabel.toLowerCase() }),
+          });
+        }
         return;
       }
 
@@ -68,12 +78,20 @@ const registerKudosStatsCommand = (app) => {
         },
       ];
 
-      await client.chat.postEphemeral({
-        channel: body.channel_id,
-        user: body.user_id,
-        text: t('leaderboard.title', locale, { period: periodLabel }),
-        blocks,
-      });
+      if (isDM) {
+        await client.chat.postMessage({
+          channel: body.user_id,
+          text: t('leaderboard.title', locale, { period: periodLabel }),
+          blocks,
+        });
+      } else {
+        await client.chat.postEphemeral({
+          channel: body.channel_id,
+          user: body.user_id,
+          text: t('leaderboard.title', locale, { period: periodLabel }),
+          blocks,
+        });
+      }
 
     } catch (error) {
       console.error('Error showing kudos stats:', error);
