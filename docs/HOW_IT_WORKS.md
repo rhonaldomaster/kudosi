@@ -21,10 +21,12 @@ Kudos is a Slack app for employee recognition at Koombea. It allows team members
 1. **`/kudos` Command** - Opens an interactive modal to send kudos
 2. **Multi-recipient Support** - Send kudos to multiple people at once
 3. **Categories** - Configurable kudos categories (Teamwork, Innovation, etc.)
-4. **Delivery Mode** - Post to a channel or send privately via DM only
-5. **GIF Search** - Search and attach Giphy GIFs to kudos
-6. **Custom Image URL** - Paste an image URL as an alternative to GIF search
-7. **DM Notifications** - Recipients get notified via direct message
+4. **Delivery Mode** - Post to a channel or send privately via DM only; channel selector shows/hides dynamically based on the selected mode
+5. **Channel Fallback** - If no channel is selected, falls back to `GENERAL_CHANNEL_ID`; if not configured, the sender receives a DM explaining the issue
+6. **Private Channel Support** - If the bot is not a member of the selected private channel, the sender receives a DM with instructions to invite the bot
+7. **GIF Search** - Search and attach Giphy GIFs to kudos
+8. **Custom Image URL** - Paste an image URL as an alternative to GIF search
+9. **DM Notifications** - Recipients get notified via direct message
 
 ### Additional Features
 
@@ -46,7 +48,9 @@ kudos/
 │   │   └── kudosModal.js      # Modal Block Kit builder
 │   ├── actions/
 │   │   ├── submitKudos.js     # Modal submission handler
-│   │   └── searchGifs.js      # GIF search action handler
+│   │   ├── searchGifs.js      # GIF search action handler
+│   │   ├── selectBankImage.js # Image bank selection handler
+│   │   └── deliveryToggle.js  # Delivery mode toggle (shows/hides channel selector)
 │   ├── services/
 │   │   ├── giphy.js           # Giphy API integration
 │   │   ├── i18n.js            # Internationalization (en/es)
@@ -114,8 +118,11 @@ kudos/
 4. Backend:
    - Saves kudos to database
    - If channel delivery: posts formatted message to selected channel + sends DMs
+     - If no channel was selected, falls back to `GENERAL_CHANNEL_ID`
+     - If the bot is not a member of the channel (`channel_not_found`), sends DM to sender with instructions
+     - If neither a channel nor `GENERAL_CHANNEL_ID` is set, sends DM to sender explaining the issue
    - If private delivery: sends DMs only (no channel post)
-   - Attached image uses GIF if selected, otherwise custom image URL if provided
+   - Attached image uses GIF if selected, otherwise image bank selection, otherwise custom image URL if provided
 
 ### Flow: Viewing Stats
 
@@ -149,6 +156,7 @@ NODE_ENV=development
 
 # Scheduler
 LEADERBOARD_CHANNEL_ID=C0123456789
+GENERAL_CHANNEL_ID=C0123456789
 
 # Giphy
 GIPHY_API_KEY=your-giphy-api-key
@@ -168,6 +176,7 @@ im:write            # Send DMs
 users:read          # Read user info
 channels:read       # Read channel list
 groups:read         # Read private channels
+groups:write        # Post to private channels (bot must be invited first)
 ```
 
 ## Local Development Setup

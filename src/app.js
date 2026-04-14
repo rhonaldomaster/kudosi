@@ -6,6 +6,7 @@ const { registerKudosExportCommand } = require('./commands/kudosExport');
 const { registerSubmitKudos } = require('./actions/submitKudos');
 const { registerSearchGifs } = require('./actions/searchGifs');
 const { registerSelectBankImage } = require('./actions/selectBankImage');
+const { registerDeliveryToggle } = require('./actions/deliveryToggle');
 const { startLeaderboardScheduler } = require('./scheduler/leaderboardJob');
 
 const app = new App({
@@ -24,6 +25,7 @@ registerKudosExportCommand(app);
 registerSubmitKudos(app);
 registerSearchGifs(app);
 registerSelectBankImage(app);
+registerDeliveryToggle(app);
 
 (async () => {
   const port = process.env.PORT || 3000;

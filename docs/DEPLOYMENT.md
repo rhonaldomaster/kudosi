@@ -23,6 +23,7 @@ This guide covers deploying the Kudos app to Railway (recommended) and configuri
    users:read
    channels:read
    groups:read
+   groups:write
    ```
 4. Under **Slash Commands**, ensure these are registered:
    - `/kudos` - Send kudos to teammates
@@ -108,6 +109,9 @@ GIPHY_API_KEY=your-giphy-api-key
 # Scheduler (optional - for automatic monthly leaderboard)
 LEADERBOARD_CHANNEL_ID=C0123456789
 
+# General channel fallback (optional - used when no channel is selected in the kudos modal)
+GENERAL_CHANNEL_ID=C0123456789
+
 # Google Sheets (optional - for export feature)
 GOOGLE_SHEETS_ID=your-spreadsheet-id
 GOOGLE_CREDENTIALS_JSON={"type":"service_account",...}
@@ -165,6 +169,7 @@ Kudos app is running on port 3000
 | `NODE_ENV` | No | `development` or `production` |
 | `GIPHY_API_KEY` | No | Giphy API key for GIF search in kudos modal |
 | `LEADERBOARD_CHANNEL_ID` | No | Channel for scheduled leaderboard posts |
+| `GENERAL_CHANNEL_ID` | No | Fallback channel when no channel is selected in the kudos modal |
 | `GOOGLE_SHEETS_ID` | No | Google Sheet ID for export |
 | `GOOGLE_CREDENTIALS_JSON` | No | Service account JSON (for production) |
 | `GOOGLE_CREDENTIALS_PATH` | No | Path to credentials file (for local dev) |
