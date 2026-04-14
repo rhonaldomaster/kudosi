@@ -14,7 +14,8 @@ const registerSubmitKudos = (app) => {
       const message = values.message_block.message.value;
       const category = values.category_block.category.selected_option;
       const delivery = values.delivery_block?.delivery?.selected_option?.value || 'channel';
-      const channelId = delivery === 'private' ? null : values.channel_block?.channel?.selected_conversation;
+      const selectedChannel = delivery === 'private' ? null : values.channel_block?.channel?.selected_conversation;
+      const channelId = selectedChannel || process.env.GENERAL_CHANNEL_ID || null;
       const categoryId = parseInt(category.value) || null;
 
       // Resolve selected GIF URL from private_metadata
@@ -86,6 +87,14 @@ const registerSubmitKudos = (app) => {
       }
 
       // Post kudos to the selected channel (skip if private delivery)
+      if (delivery === 'channel' && !channelId) {
+        await client.chat.postMessage({
+          channel: senderId,
+          text: 'Your kudos could not be posted because no channel was selected and no default channel is configured. Please select a channel and try again.',
+        });
+        return;
+      }
+
       if (delivery === 'channel' && channelId) {
         try {
           await client.chat.postMessage({
