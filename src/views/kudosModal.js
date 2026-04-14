@@ -1,6 +1,6 @@
 const { t } = require('../services/i18n');
 
-const buildKudosModal = (categories = [], locale = 'en', currentValues = {}, gifResults = [], bankImages = [], gifEnabled = true) => {
+const buildKudosModal = (categories = [], locale = 'en', currentValues = {}, gifResults = [], bankImages = [], gifEnabled = true, showChannelBlock = true) => {
   // Recipients block
   const recipientsElement = {
     type: 'multi_users_select',
@@ -97,6 +97,17 @@ const buildKudosModal = (categories = [], locale = 'en', currentValues = {}, gif
     channelElement.initial_conversation = currentValues.channel;
   }
 
+  const channelBlock = {
+    type: 'input',
+    block_id: 'channel_block',
+    optional: true,
+    label: {
+      type: 'plain_text',
+      text: t('modal.channelLabel', locale),
+    },
+    element: channelElement,
+  };
+
   // Image URL input
   const imageUrlElement = {
     type: 'plain_text_input',
@@ -155,22 +166,14 @@ const buildKudosModal = (categories = [], locale = 'en', currentValues = {}, gif
     {
       type: 'input',
       block_id: 'delivery_block',
+      dispatch_action: true,
       label: {
         type: 'plain_text',
         text: t('modal.deliveryLabel', locale),
       },
       element: deliveryElement,
     },
-    {
-      type: 'input',
-      block_id: 'channel_block',
-      optional: true,
-      label: {
-        type: 'plain_text',
-        text: t('modal.channelLabel', locale),
-      },
-      element: channelElement,
-    },
+    ...(showChannelBlock ? [channelBlock] : []),
   ];
 
   // GIF search section (only if Giphy is configured)
