@@ -13,9 +13,7 @@ const registerSubmitKudos = (app) => {
       const recipients = values.recipients_block.recipients.selected_users;
       const message = values.message_block.message.value;
       const category = values.category_block.category.selected_option;
-      const delivery = values.delivery_block?.delivery?.selected_option?.value || 'channel';
-      const selectedChannel = delivery === 'private' ? null : values.channel_block?.channel?.selected_conversation;
-      const channelId = selectedChannel || process.env.GENERAL_CHANNEL_ID || null;
+      const channelId = process.env.GENERAL_CHANNEL_ID || null;
       const categoryId = parseInt(category.value) || null;
 
       // Resolve selected GIF URL from private_metadata
@@ -30,21 +28,7 @@ const registerSubmitKudos = (app) => {
         }
       }
 
-      // Resolve selected Image Bank URL from private_metadata
-      let selectedBankImage = null;
-      const bankImageId = values.image_bank_block?.image_bank_selection?.selected_option?.value || null;
-      if (bankImageId && view.private_metadata) {
-        try {
-          const metadata = JSON.parse(view.private_metadata);
-          selectedBankImage = metadata.imageBankMap?.[bankImageId] || null;
-        } catch (e) {
-          // Ignore parse errors
-        }
-      }
-
-      // Image priority: GIF > Image Bank > Custom URL
-      const imageUrl = values.image_url_block?.image_url?.value || null;
-      const finalImage = selectedGif || selectedBankImage || imageUrl || null;
+      const finalImage = selectedGif || null;
 
       // Format recipients as mentions
       const recipientMentions = recipients.map(id => `<@${id}>`).join(', ');
@@ -86,33 +70,20 @@ const registerSubmitKudos = (app) => {
         });
       }
 
-      // Post kudos to the selected channel (skip if private delivery)
-      if (delivery === 'channel' && !channelId) {
+      // Post kudos to #general
+      if (!channelId) {
         await client.chat.postMessage({
           channel: senderId,
-          text: 'Your kudos could not be posted because no channel was selected and no default channel is configured. Please select a channel and try again.',
+          text: 'Your kudos could not be posted because GENERAL_CHANNEL_ID is not configured.',
         });
         return;
       }
 
-      if (delivery === 'channel' && channelId) {
-        try {
-          await client.chat.postMessage({
-            channel: channelId,
-            text: `${recipientMentions} ${t('kudos.channelMessage', 'en')}`,
-            blocks: kudosBlocks,
-          });
-        } catch (channelError) {
-          if (channelError.data?.error === 'channel_not_found' || channelError.data?.error === 'not_in_channel') {
-            await client.chat.postMessage({
-              channel: senderId,
-              text: `Your kudos could not be posted to the selected channel. If it's a private channel, please invite the app first by typing \`/invite @${process.env.SLACK_BOT_NAME || 'Kudos'}\` in that channel, then try again.`,
-            });
-            return;
-          }
-          throw channelError;
-        }
-      }
+      await client.chat.postMessage({
+        channel: channelId,
+        text: `${recipientMentions} ${t('kudos.channelMessage', 'en')}`,
+        blocks: kudosBlocks,
+      });
 
       // Send DM to each recipient (in their language)
       for (const recipientId of recipients) {

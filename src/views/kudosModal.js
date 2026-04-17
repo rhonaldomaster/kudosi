@@ -1,6 +1,6 @@
 const { t } = require('../services/i18n');
 
-const buildKudosModal = (categories = [], locale = 'en', currentValues = {}, gifResults = [], bankImages = [], gifEnabled = true, showChannelBlock = true) => {
+const buildKudosModal = (categories = [], locale = 'en', currentValues = {}, gifResults = [], gifEnabled = true) => {
   // Recipients block
   const recipientsElement = {
     type: 'multi_users_select',
@@ -61,66 +61,6 @@ const buildKudosModal = (categories = [], locale = 'en', currentValues = {}, gif
     }
   }
 
-  // Delivery mode block
-  const deliveryOptions = [
-    {
-      text: { type: 'plain_text', text: t('modal.deliveryChannel', locale) },
-      value: 'channel',
-    },
-    {
-      text: { type: 'plain_text', text: t('modal.deliveryPrivate', locale) },
-      value: 'private',
-    },
-  ];
-
-  const deliveryElement = {
-    type: 'radio_buttons',
-    action_id: 'delivery',
-    options: deliveryOptions,
-    initial_option: deliveryOptions.find(o => o.value === (currentValues.delivery || 'channel')),
-  };
-
-  // Channel block
-  const channelElement = {
-    type: 'conversations_select',
-    action_id: 'channel',
-    placeholder: {
-      type: 'plain_text',
-      text: t('modal.channelPlaceholder', locale),
-    },
-    filter: {
-      include: ['public', 'private'],
-      exclude_bot_users: true,
-    },
-  };
-  if (currentValues.channel) {
-    channelElement.initial_conversation = currentValues.channel;
-  }
-
-  const channelBlock = {
-    type: 'input',
-    block_id: 'channel_block',
-    optional: true,
-    label: {
-      type: 'plain_text',
-      text: t('modal.channelLabel', locale),
-    },
-    element: channelElement,
-  };
-
-  // Image URL input
-  const imageUrlElement = {
-    type: 'plain_text_input',
-    action_id: 'image_url',
-    placeholder: {
-      type: 'plain_text',
-      text: t('modal.imageUrlPlaceholder', locale),
-    },
-  };
-  if (currentValues.imageUrl) {
-    imageUrlElement.initial_value = currentValues.imageUrl;
-  }
-
   // GIF search input
   const gifSearchElement = {
     type: 'plain_text_input',
@@ -163,17 +103,6 @@ const buildKudosModal = (categories = [], locale = 'en', currentValues = {}, gif
       },
       element: categoryElement,
     },
-    {
-      type: 'input',
-      block_id: 'delivery_block',
-      dispatch_action: true,
-      label: {
-        type: 'plain_text',
-        text: t('modal.deliveryLabel', locale),
-      },
-      element: deliveryElement,
-    },
-    ...(showChannelBlock ? [channelBlock] : []),
   ];
 
   // GIF search section (only if Giphy is configured)
@@ -217,15 +146,10 @@ const buildKudosModal = (categories = [], locale = 'en', currentValues = {}, gif
     );
   }
 
-  // Build private_metadata with GIF URL mapping and image bank mapping
+  // Build private_metadata with GIF URL mapping
   const gifMap = {};
   for (const gif of gifResults) {
     gifMap[gif.id] = gif.originalUrl;
-  }
-
-  const imageBankMap = {};
-  for (const img of bankImages) {
-    imageBankMap[String(img.id)] = img.url;
   }
 
   // Add GIF results if present
@@ -280,82 +204,6 @@ const buildKudosModal = (categories = [], locale = 'en', currentValues = {}, gif
     }
   }
 
-  // Image Bank section
-  if (bankImages.length > 0) {
-    const bankOptions = bankImages.map(img => ({
-      text: {
-        type: 'plain_text',
-        text: img.title,
-      },
-      value: String(img.id),
-    }));
-
-    const bankElement = {
-      type: 'static_select',
-      action_id: 'image_bank_selection',
-      placeholder: {
-        type: 'plain_text',
-        text: t('modal.imageBankPlaceholder', locale),
-      },
-      options: bankOptions,
-    };
-
-    if (currentValues.selectedBankImage) {
-      const selectedOption = bankOptions.find(o => o.value === currentValues.selectedBankImage);
-      if (selectedOption) {
-        bankElement.initial_option = selectedOption;
-      }
-    }
-
-    blocks.push({
-      type: 'divider',
-    });
-    blocks.push({
-      type: 'section',
-      text: {
-        type: 'mrkdwn',
-        text: t('modal.imageBankSectionTitle', locale),
-      },
-    });
-    blocks.push({
-      type: 'input',
-      block_id: 'image_bank_block',
-      optional: true,
-      dispatch_action: true,
-      label: {
-        type: 'plain_text',
-        text: t('modal.imageBankLabel', locale),
-      },
-      element: bankElement,
-    });
-
-    // Show preview of selected image
-    if (currentValues.selectedBankImage) {
-      const selectedImg = bankImages.find(img => String(img.id) === currentValues.selectedBankImage);
-      if (selectedImg) {
-        blocks.push({
-          type: 'image',
-          image_url: selectedImg.url,
-          alt_text: selectedImg.title,
-        });
-      }
-    }
-  }
-
-  // Image URL field always at the bottom
-  blocks.push({
-    type: 'divider',
-  });
-  blocks.push({
-    type: 'input',
-    block_id: 'image_url_block',
-    optional: true,
-    label: {
-      type: 'plain_text',
-      text: t('modal.imageUrlLabel', locale),
-    },
-    element: imageUrlElement,
-  });
 
   const modal = {
     type: 'modal',
@@ -375,15 +223,8 @@ const buildKudosModal = (categories = [], locale = 'en', currentValues = {}, gif
     blocks,
   };
 
-  const metadata = {};
   if (Object.keys(gifMap).length > 0) {
-    metadata.gifMap = gifMap;
-  }
-  if (Object.keys(imageBankMap).length > 0) {
-    metadata.imageBankMap = imageBankMap;
-  }
-  if (Object.keys(metadata).length > 0) {
-    modal.private_metadata = JSON.stringify(metadata);
+    modal.private_metadata = JSON.stringify({ gifMap });
   }
 
   return modal;
