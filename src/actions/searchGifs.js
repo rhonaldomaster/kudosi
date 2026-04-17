@@ -1,6 +1,6 @@
 const { searchGifs } = require('../services/giphy');
 const { buildKudosModal } = require('../views/kudosModal');
-const { getActiveCategories, getActiveImages } = require('../db/queries');
+const { getActiveCategories } = require('../db/queries');
 const { getLocale } = require('../services/i18n');
 
 const registerSearchGifs = (app) => {
@@ -17,12 +17,8 @@ const registerSearchGifs = (app) => {
         recipients: values.recipients_block?.recipients?.selected_users || [],
         message: values.message_block?.message?.value || '',
         category: values.category_block?.category?.selected_option?.value || null,
-        delivery: values.delivery_block?.delivery?.selected_option?.value || 'channel',
-        channel: values.channel_block?.channel?.selected_conversation || null,
         gifQuery: values.gif_search_block?.gif_search_input?.value || '',
-        selectedGif: values.gif_selection_block?.gif_selection?.selected_option?.value || null, // GIF ID
-        imageUrl: values.image_url_block?.image_url?.value || '',
-        selectedBankImage: values.image_bank_block?.image_bank_selection?.selected_option?.value || null,
+        selectedGif: values.gif_selection_block?.gif_selection?.selected_option?.value || null,
       };
 
       const query = currentValues.gifQuery;
@@ -31,19 +27,15 @@ const registerSearchGifs = (app) => {
         return;
       }
 
-      // Fetch categories, locale, and bank images
-      const [categories, locale, bankImages] = await Promise.all([
+      const [categories, locale] = await Promise.all([
         getActiveCategories(),
         getLocale(userId, client),
-        getActiveImages(),
       ]);
 
-      // Search GIFs
       const gifResults = await searchGifs(query);
 
-      // Update modal with GIF results
       const gifEnabled = !!process.env.GIPHY_API_KEY;
-      const updatedModal = buildKudosModal(categories, locale, currentValues, gifResults, bankImages, gifEnabled);
+      const updatedModal = buildKudosModal(categories, locale, currentValues, gifResults, gifEnabled);
 
       await client.views.update({
         view_id: view.id,
