@@ -13,6 +13,7 @@ const registerSubmitKudos = (app) => {
       const recipients = values.recipients_block.recipients.selected_users;
       const message = values.message_block.message.value;
       const category = values.category_block.category.selected_option;
+      const delivery = values.delivery_block?.delivery?.selected_option?.value || 'channel';
       const channelId = process.env.GENERAL_CHANNEL_ID || null;
       const categoryId = parseInt(category.value) || null;
 
@@ -40,7 +41,7 @@ const registerSubmitKudos = (app) => {
           type: 'section',
           text: {
             type: 'mrkdwn',
-            text: `*${recipientMentions}* ${t('kudos.channelMessage', 'en')}`,
+            text: `*${recipientMentions}* ${t('kudos.receivedTitle', 'en')}`,
           },
         },
         {
@@ -70,20 +71,22 @@ const registerSubmitKudos = (app) => {
         });
       }
 
-      // Post kudos to #general
-      if (!channelId) {
-        await client.chat.postMessage({
-          channel: senderId,
-          text: 'Your kudos could not be posted because GENERAL_CHANNEL_ID is not configured.',
-        });
-        return;
-      }
+      // Post kudos to #general (only if delivery mode is 'channel')
+      if (delivery === 'channel') {
+        if (!channelId) {
+          await client.chat.postMessage({
+            channel: senderId,
+            text: 'Your kudos could not be posted because GENERAL_CHANNEL_ID is not configured.',
+          });
+          return;
+        }
 
-      await client.chat.postMessage({
-        channel: channelId,
-        text: `${recipientMentions} ${t('kudos.channelMessage', 'en')}`,
-        blocks: kudosBlocks,
-      });
+        await client.chat.postMessage({
+          channel: channelId,
+          text: `${recipientMentions} ${t('kudos.receivedTitle', 'en')}`,
+          blocks: kudosBlocks,
+        });
+      }
 
       // Send DM to each recipient (in their language)
       for (const recipientId of recipients) {
