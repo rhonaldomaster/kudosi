@@ -74,8 +74,36 @@ const buildKudosModal = (categories = [], locale = 'en', currentValues = {}, gif
     gifSearchElement.initial_value = currentValues.gifQuery;
   }
 
+  // Delivery toggle
+  const deliveryOptions = [
+    {
+      text: { type: 'plain_text', text: t('modal.deliveryChannel', locale) },
+      value: 'channel',
+    },
+    {
+      text: { type: 'plain_text', text: t('modal.deliveryPrivate', locale) },
+      value: 'dm',
+    },
+  ];
+
+  const deliveryElement = {
+    type: 'radio_buttons',
+    action_id: 'delivery',
+    options: deliveryOptions,
+    initial_option: deliveryOptions.find(o => o.value === (currentValues.delivery || 'channel')),
+  };
+
   // Base blocks
   const blocks = [
+    {
+      type: 'input',
+      block_id: 'delivery_block',
+      label: {
+        type: 'plain_text',
+        text: t('modal.deliveryLabel', locale),
+      },
+      element: deliveryElement,
+    },
     {
       type: 'input',
       block_id: 'recipients_block',
