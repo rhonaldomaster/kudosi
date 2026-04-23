@@ -41,14 +41,7 @@ const registerSubmitKudos = (app) => {
           type: 'section',
           text: {
             type: 'mrkdwn',
-            text: `*${recipientMentions}* ${t('kudos.receivedTitle', 'en')}`,
-          },
-        },
-        {
-          type: 'section',
-          text: {
-            type: 'mrkdwn',
-            text: `> ${message}`,
+            text: `Hey ${recipientMentions}! *KUDOS* - You are being recognized by <@${senderId}>, who wants to tell you: ${message}`,
           },
         },
         {
@@ -56,7 +49,7 @@ const registerSubmitKudos = (app) => {
           elements: [
             {
               type: 'mrkdwn',
-              text: `${category.text.text} | ${fromText('en')}: <@${senderId}>`,
+              text: `${category.text.text}`,
             },
           ],
         },
@@ -83,7 +76,7 @@ const registerSubmitKudos = (app) => {
 
         await client.chat.postMessage({
           channel: channelId,
-          text: `${recipientMentions} ${t('kudos.receivedTitle', 'en')}`,
+          text: `Hey ${recipientMentions}! KUDOS - You are being recognized by <@${senderId}>, who wants to tell you: ${message}`,
           blocks: kudosBlocks,
         });
       }
