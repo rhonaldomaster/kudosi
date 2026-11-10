@@ -7,7 +7,7 @@ A Slack application for employee recognition (kudos) at Koombea. Allows team mem
 - **Runtime:** Node.js
 - **Framework:** Slack Bolt
 - **Database:** PostgreSQL
-- **Hosting:** Railway
+- **Hosting:** Coolify
 - **Localization:** i18next (English & Spanish)
 - **Scheduling:** node-cron
 

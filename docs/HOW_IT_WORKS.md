@@ -10,7 +10,7 @@ Kudos is a Slack app for employee recognition at Koombea. It allows team members
 | --------- | ------------------------ |
 | Backend   | Node.js + Bolt for Slack |
 | Database  | PostgreSQL               |
-| Hosting   | Railway (production)     |
+| Hosting   | Coolify (production)     |
 | Export    | Google Sheets API        |
 | UI        | Slack Block Kit          |
 
